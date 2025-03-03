@@ -9,7 +9,7 @@ import { logger as _logger } from "../logger";
 import { processUrl } from "./url-processor";
 import { scrapeDocument } from "./document-scraper";
 import {
-  generateOpenAICompletions,
+  generateCompletions,
   generateSchemaFromPrompt,
 } from "../../scraper/scrapeURL/transformers/llmExtract";
 import { billTeam } from "../../services/billing/credit_billing";
@@ -48,7 +48,7 @@ interface ExtractServiceOptions {
   cacheKey?: string;
 }
 
-interface ExtractResult {
+export interface ExtractResult {
   success: boolean;
   data?: any;
   extractId: string;
@@ -294,6 +294,8 @@ export async function performExtraction(
             isMultiEntity: true,
           }),
           {
+            ...request.scrapeOptions,
+
             // Needs to be true for multi-entity to work properly
             onlyMainContent: true,
           }
@@ -408,7 +410,7 @@ export async function performExtraction(
           const multiEntityCompletion = (await Promise.race([
             completionPromise,
             timeoutPromise,
-          ])) as Awaited<ReturnType<typeof generateOpenAICompletions>>;
+          ])) as Awaited<ReturnType<typeof generateCompletions>>;
 
           // Track multi-entity extraction tokens
           if (multiEntityCompletion) {
@@ -554,6 +556,7 @@ export async function performExtraction(
             url,
             isMultiEntity: false,
           }),
+          request.scrapeOptions
         );
       }
       return docsMap.get(normalizeUrl(url));
@@ -677,7 +680,7 @@ export async function performExtraction(
   // }
   // // Deduplicate and validate final result against schema
   // if (reqSchema && finalResult && finalResult.length <= extractConfig.DEDUPLICATION.MAX_TOKENS) {
-  //   const schemaValidation = await generateOpenAICompletions(
+  //   const schemaValidation = await generateCompletions(
   //     logger.child({ method: "extractService/validateAndDeduplicate" }),
   //     {
   //       mode: "llm",

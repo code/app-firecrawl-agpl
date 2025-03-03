@@ -159,6 +159,7 @@ export enum NotificationType {
   AUTO_RECHARGE_SUCCESS = "autoRechargeSuccess",
   AUTO_RECHARGE_FAILED = "autoRechargeFailed",
   CONCURRENCY_LIMIT_REACHED = "concurrencyLimitReached",
+  AUTO_RECHARGE_FREQUENT = "autoRechargeFrequent",
 }
 
 export type ScrapeLog = {
@@ -188,6 +189,7 @@ export type PlanType =
   | "etier2c"
   | "etier1a"
   | "etierscale1"
+  | "etierscale2"
   | "etier2a"
   | "free"
   | "testSuite"
